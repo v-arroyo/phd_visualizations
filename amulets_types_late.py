@@ -10,13 +10,13 @@ SELECT
     s.site_name,
     b.owner,
     a.type,
-    COUNT(artifact_id) as count
+    COUNT(amulet_id) as count
 FROM burials b
 JOIN sites s
 ON s.site_id = b.site_id
 JOIN amulets a
 ON a.burial_id = b.burial_id
-WHERE temp = 'pre-25th dyn.' AND b.site_id IN (1,2)
+WHERE temp = 'late napatan' AND b.site_id IN (1,2)
 GROUP BY 1,2,3
 """
 
@@ -27,12 +27,12 @@ custom_colors = ['#e9724d', '#92cad1', '#d6d727', '#79ccb3', '#868686']
 fig = px.bar(
     df,
     x="count",
-    y="artifact_type",
+    y="type",
     color="owner",
     facet_col="site_name",
-    #text='count',
+    text='count',
     barmode='group',
-    title="Pre-25th Dynasty amulet types",
+    title="Late Napatan amulet types",
     labels={"owner": "owner", "artifact_type": "obj. type", "site_name": "site"},
     color_discrete_sequence=custom_colors,
     template="plotly_white"
@@ -49,18 +49,18 @@ fig.update_layout(yaxis={'categoryorder': 'total ascending'},
     font=dict(
         family="Verdana, sans-serif",
         color='black',
-        size=8),
+        size=10),
     legend_title_text='',
     #yaxis=dict(
         #tickmode='linear',
         #dtick=1),
     margin=dict(l=0, r=10, t=50, b=0),
     autosize=True,
-    title_font=dict(size=8)
+    title_font=dict(size=10)
 )
 
 fig.update_traces(textposition='outside')
 fig.update_xaxes(title_text='')
 fig.update_yaxes(title_text='')
 
-pio.write_image(fig, 'images/amulets_pre.png',scale=3, width=450, height=350)
+pio.write_image(fig, 'images/amulets_types_late.png',scale=3, width=350, height=250)
