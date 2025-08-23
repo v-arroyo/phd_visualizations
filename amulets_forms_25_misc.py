@@ -18,10 +18,9 @@ WITH expanded_forms AS (
     JOIN sites s ON s.site_id = b.site_id
     WHERE 
         b.temp = '25th dyn.' 
-        AND s.site_id IN (1)
+        AND s.site_id IN (1,2)
         AND a.form IS NOT NULL
-        AND a.type = 'deity'
-        AND a.form != 'animals'
+        AND a.type IN ('object', 'other', 'nature', 'human')
 
     UNION ALL
 
@@ -36,10 +35,9 @@ WITH expanded_forms AS (
     JOIN sites s ON s.site_id = b.site_id
     WHERE 
         b.temp = '25th dyn.' 
-        AND s.site_id IN (1)
+        AND s.site_id IN (1,2)
         AND a.form2 IS NOT NULL
-        AND a.type = 'deity'
-        AND a.form2 != 'animals'
+        AND a.type IN ('object', 'other', 'nature', 'human')
 
     UNION ALL
 
@@ -54,10 +52,9 @@ WITH expanded_forms AS (
     JOIN sites s ON s.site_id = b.site_id
     WHERE 
         b.temp = '25th dyn.' 
-        AND s.site_id IN (1)
+        AND s.site_id IN (1,2)
         AND a.form3 IS NOT NULL
-        AND a.type = 'deity'
-        AND a.form3 != 'animals'
+        AND a.type IN ('object', 'other', 'nature', 'human')
 )
 SELECT 
     site_name,
@@ -71,7 +68,7 @@ GROUP BY 1,2,3,4
 
 df = pd.read_sql(query, engine)
 
-custom_colors = ['#e9724d', '#92cad1', '#d6d727', '#79ccb3', '#868686']
+custom_colors = ['#e9724d','#d6d727','#92cad1', '#d6d727', '#79ccb3', '#868686']
 
 fig = px.bar(
     df,
@@ -81,7 +78,7 @@ fig = px.bar(
     facet_col="site_name",
     text='total',
     barmode='stack',
-    title="25th Dynasty amulet motifs",
+    title="25th Dynasty nature, object and other types of amulets",
     labels={"owner": "owner", "artifact_type": "obj. type", "site_name": "site"},
     color_discrete_sequence=custom_colors,
     template="plotly_white"
@@ -90,10 +87,10 @@ fig = px.bar(
 fig.update_layout(xaxis={'categoryorder': 'total descending'}, 
     legend=dict(
         #orientation="h",
-        yanchor="top",
-        y=0.80,
-        xanchor="right",
-        x=0.93,
+        yanchor="bottom",
+        y=-0.26,
+        xanchor="center",
+        x=0.40,
         traceorder='reversed'),
     font=dict(
         family="Verdana, sans-serif",
@@ -108,8 +105,8 @@ fig.update_layout(xaxis={'categoryorder': 'total descending'},
     title_font=dict(size=8)
 )
 
-fig.update_traces(textposition='outside', textfont_size=5)
-fig.update_xaxes(title_text='', matches=None, tickangle=45)
+fig.update_traces(textposition='inside', textfont_size=6)
+fig.update_xaxes(title_text='', matches=None)
 fig.update_yaxes(title_text='')
 
-pio.write_image(fig, 'images/amulets_forms_25_deities.png',scale=3, width=450, height=320)
+pio.write_image(fig, 'images/amulets_forms_25_misc.png',scale=3, width=450, height=250)
