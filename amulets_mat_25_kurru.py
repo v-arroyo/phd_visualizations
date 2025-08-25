@@ -19,13 +19,13 @@ JOIN sites s
 ON s.site_id = b.site_id
 JOIN amulets a
 ON a.burial_id = b.burial_id
-WHERE temp = 'early napatan' AND b.site_id IN (1,2) AND a.material IS NOT NULL
+WHERE temp = '25th dyn.' AND b.site_id IN (1) AND a.material IS NOT NULL
 GROUP BY 1,2,3
 """
 
 df = pd.read_sql(query, engine)
 
-custom_colors = ['#92cad1', '#e9724d', '#d6d727', '#79ccb3', '#868686']
+custom_colors = ['#e9724d', '#92cad1', '#d6d727', '#79ccb3', '#868686']
 
 fig = px.bar(
     df,
@@ -35,7 +35,7 @@ fig = px.bar(
     facet_col="site_name",
     text='count',
     barmode='stack',
-    title="Early Napatan amulet materials",
+    title="25th Dynasty amulet materials",
     labels={"owner": "owner", "artifact_type": "obj. type", "site_name": "site"},
     color_discrete_sequence=custom_colors,
     template="plotly_white"
@@ -45,7 +45,7 @@ fig.update_layout(yaxis={'categoryorder': 'total ascending'},
     legend=dict(
         orientation="h",
         yanchor="bottom",
-        y=-0.25,
+        y=-0.24,
         xanchor="center",
         x=0.40),
         #traceorder='reversed'),
@@ -66,4 +66,4 @@ fig.update_traces(textposition='outside', textfont_size=6)
 fig.update_xaxes(title_text='')
 fig.update_yaxes(title_text='')
 
-pio.write_image(fig, 'images/amulets_mat_early.png',scale=3, width=500, height=250)
+pio.write_image(fig, 'images/amulets_mat_25_kurru.png',scale=3, width=500, height=250)
