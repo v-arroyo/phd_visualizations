@@ -8,30 +8,28 @@ engine = create_engine('mysql+pymysql://victoria:amulets123@localhost:3306/phd_v
 query = """
 SELECT 
     s.site_name,
-    owner,
     super,
     sub,
     COUNT(burial_id) as total_burials
 FROM burials b
 JOIN sites s
 ON s.site_id = b.site_id
-WHERE temp = 'pre-25th dyn.' AND b.site_id IN (1,2)
-GROUP BY 1,2,3,4
+WHERE dating = 'napatan' AND b.site_id = 6 AND sub != 'deposit'
+GROUP BY 1,2,3
 """
 
 df = pd.read_sql(query, engine)
 
-custom_colors = ['#e9724d', '#92cad1', '#d6d727', '#79ccb3', '#868686']
+custom_colors = ['#D3D3D3']
 
 fig = px.bar(
     df,
     x="super",
     y="total_burials",
-    color="owner",
     facet_col="site_name",
     facet_row="sub",
     text="total_burials",
-    title="Pre-25th Dynasty tomb structure",
+    title="Missiminia tomb structures",
     labels={"super": "superstructure", "sub": "substructure", "site_name": "site"},
     color_discrete_sequence=custom_colors,
     template="plotly_white"
@@ -60,6 +58,6 @@ fig.update_layout(xaxis={'categoryorder': 'total descending'},
 
 fig.update_traces(textposition='auto')
 fig.update_xaxes(title_text='')
-fig.update_yaxes(title_text='')
+fig.update_yaxes(title_text='', matches=None)
 
-pio.write_image(fig, 'images/pre_tomb.png',scale=3, width=400, height=300)
+pio.write_image(fig, 'images/chapter5/missiminia_tomb.png',scale=3, width=450, height=300)
