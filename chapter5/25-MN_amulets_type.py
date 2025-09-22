@@ -8,13 +8,14 @@ engine = create_engine('mysql+pymysql://victoria:amulets123@localhost:3306/phd_v
 query = """
 select 
 	site_name,
-    material,
+    type,
     count(amulet_id) as total
 from burials b
 join sites s on s.site_id = b.site_id
 join amulets a on a.burial_id = b.burial_id
-where dating = 'napatan' and b.site_id in (4,5,6,7,8,9,10) and material IS NOT NULL
-    and super != 'pyramid' and sub not in ('chambers', 'cave tomb') and temp = '25th'
+where dating = 'napatan' and b.site_id in (4,5,6,7,8,9,10) and temp = '25th-MN'
+    and super != 'pyramid' 
+    and sub not in ('chambers', 'cave tomb')
 group by 1,2
 """
 
@@ -24,23 +25,24 @@ custom_colors = ['#e9724d', '#92cad1', '#d6d727', '#79ccb3', '#868686']
 
 fig = px.bar(
     df,
-    x="material",
+    x="type",
     y="total",
     color="site_name",
     text="total",
     barmode='stack',
-    title="25th Dynasty amulet materials",
+    title="25th Dynasty-Middle Napatan non-elite amulet types",
+    labels={"super": "superstructure", "sub": "substructure", "site_name": "site"},
     color_discrete_sequence=custom_colors,
     template="plotly_white"
 )
 
-fig.update_layout(xaxis=dict(categoryorder='total descending', automargin=True, title_standoff=0), 
+fig.update_layout(xaxis={'categoryorder': 'total descending'}, 
     legend=dict(
-        #orientation="h",
+        orientation="h",
         yanchor="bottom",
-        y=0.40,
+        y=0.54,
         xanchor="center",
-        x=0.80,
+        x=0.75,
         traceorder='reversed'),
     font=dict(
         family="Verdana, sans-serif",
@@ -50,7 +52,7 @@ fig.update_layout(xaxis=dict(categoryorder='total descending', automargin=True, 
     #yaxis=dict(
         #tickmode='linear',
         #dtick=1),
-    margin=dict(l=0, r=0, t=15, b=0),
+    margin=dict(l=0, r=10, t=20, b=0),
     autosize=True,
     title_font=dict(size=8)
 )
@@ -59,4 +61,4 @@ fig.update_traces(textposition='outside', textfont_size=6)
 fig.update_xaxes(title_text='')
 fig.update_yaxes(title_text='')
 
-pio.write_image(fig, 'images/chapter5/25_amulets_mat.png',scale=3, width=550, height=300)
+pio.write_image(fig, 'images/chapter5/25-MN_amulets_type.png',scale=3, width=450, height=220)

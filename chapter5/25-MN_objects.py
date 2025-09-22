@@ -6,17 +6,18 @@ import plotly.io as pio
 engine = create_engine('mysql+pymysql://victoria:amulets123@localhost:3306/phd_v5')
 
 query = """
-SELECT 
-    s.site_name,
-    super,
-    sub,
-    temp,
-    COUNT(burial_id) as total_burials
-FROM burials b
-JOIN sites s
-ON s.site_id = b.site_id
-WHERE dating = 'napatan' AND b.site_id = 5 AND sub != 'deposit'
-GROUP BY 1,2,3,4
+select 
+	site_name,
+    artifact_type,
+    count(artifact_id) as total
+from burials b
+join sites s on s.site_id = b.site_id
+join artifacts a on a.burial_id = b.burial_id
+where dating = 'napatan' and b.site_id in (4,5,6,7,8,9,10) and temp = '25th-MN'
+    and super != 'pyramid' 
+    and sub not in ('chambers', 'cave tomb')
+    and artifact_type not in ('beads', 'scarabs')
+group by 1,2
 """
 
 df = pd.read_sql(query, engine)
@@ -25,13 +26,12 @@ custom_colors = ['#e9724d', '#92cad1', '#d6d727', '#79ccb3', '#868686']
 
 fig = px.bar(
     df,
-    x="super",
-    y="total_burials",
-    color='temp',
-    facet_col="site_name",
-    facet_row="sub",
-    text="total_burials",
-    title="Meroe South tomb structures",
+    x="artifact_type",
+    y="total",
+    color="site_name",
+    #text="total",
+    barmode='group',
+    title="25th Dynasty-Middle Napatan non-elite object types",
     labels={"super": "superstructure", "sub": "substructure", "site_name": "site"},
     color_discrete_sequence=custom_colors,
     template="plotly_white"
@@ -41,25 +41,25 @@ fig.update_layout(xaxis={'categoryorder': 'total descending'},
     legend=dict(
         orientation="h",
         yanchor="bottom",
-        y=-0.20,
+        y=0.52,
         xanchor="center",
-        x=0.50,
+        x=0.75,
         traceorder='reversed'),
     font=dict(
         family="Verdana, sans-serif",
         color='black',
-        size=10),
+        size=8),
     legend_title_text='',
     #yaxis=dict(
         #tickmode='linear',
         #dtick=1),
-    margin=dict(l=0, r=10, t=50, b=0),
+    margin=dict(l=0, r=10, t=20, b=0),
     autosize=True,
-    title_font=dict(size=10)
+    title_font=dict(size=8)
 )
 
-fig.update_traces(textposition='auto')
+fig.update_traces(textposition='auto', textfont_size=6)
 fig.update_xaxes(title_text='')
-fig.update_yaxes(title_text='', matches=None)
+fig.update_yaxes(title_text='')
 
-pio.write_image(fig, 'images/chapter5/meroesouth_tomb.png',scale=3, width=400, height=400)
+pio.write_image(fig, 'images/chapter5/25-MN_objects.png',scale=3, width=450, height=230)

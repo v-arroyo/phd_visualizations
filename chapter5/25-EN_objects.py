@@ -8,15 +8,16 @@ engine = create_engine('mysql+pymysql://victoria:amulets123@localhost:3306/phd_v
 query = """
 select 
 	site_name,
-    super,
-    sub,
-    count(burial_id) as total_burials
+    artifact_type,
+    count(artifact_id) as total
 from burials b
 join sites s on s.site_id = b.site_id
-where dating = 'napatan' and b.site_id in (4,5,6,7,8,9,10) and temp = 'MN'
-   and super != 'pyramid' 
-   and sub not in ('chambers', 'cave tomb')
-group by 1,2,3
+join artifacts a on a.burial_id = b.burial_id
+where dating = 'napatan' and b.site_id in (4,5,6,7,8,9,10) and temp = '25th'
+    and super != 'pyramid' 
+    and sub not in ('chambers', 'cave tomb')
+    and artifact_type not in ('beads', 'scarabs')
+group by 1,2
 """
 
 df = pd.read_sql(query, engine)
@@ -25,26 +26,25 @@ custom_colors = ['#e9724d', '#92cad1', '#d6d727', '#79ccb3', '#868686']
 
 fig = px.bar(
     df,
-    x="super",
-    y="total_burials",
+    x="total",
+    y="artifact_type",
     color="site_name",
+    #text="total",
     barmode='group',
-    facet_col='sub',
-    text="total_burials",
-    title="Middle Napatan non-elite tomb structures",
+    title="25th Dynasty non-elite object types",
     labels={"super": "superstructure", "sub": "substructure", "site_name": "site"},
     color_discrete_sequence=custom_colors,
     template="plotly_white"
 )
 
-fig.update_layout(xaxis={'categoryorder': 'total descending'}, 
+fig.update_layout(yaxis={'categoryorder': 'total ascending'}, 
     legend=dict(
         orientation="h",
         yanchor="bottom",
-        y=-0.43,
+        y=-0.20,
         xanchor="center",
-        x=0.50),
-        #traceorder='reversed'),
+        x=0.45,
+        traceorder='reversed'),
     font=dict(
         family="Verdana, sans-serif",
         color='black',
@@ -60,6 +60,6 @@ fig.update_layout(xaxis={'categoryorder': 'total descending'},
 
 fig.update_traces(textposition='auto', textfont_size=6)
 fig.update_xaxes(title_text='')
-fig.update_yaxes(title_text='', matches=None)
+fig.update_yaxes(title_text='')
 
-pio.write_image(fig, 'images/chapter5/middle_tombs.png',scale=3, width=400, height=200)
+pio.write_image(fig, 'images/chapter5/25_objects.png',scale=3, width=450, height=350)
