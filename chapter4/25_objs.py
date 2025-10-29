@@ -16,13 +16,11 @@ JOIN sites s
 ON s.site_id = b.site_id
 JOIN artifacts a
 ON a.burial_id = b.burial_id
-WHERE temp = 'pre-25th' AND b.site_id IN (1,2)
+WHERE temp = '25th' AND b.site_id IN (1,2)
 GROUP BY 1,2,3
 """
 
 df = pd.read_sql(query, engine)
-
-custom_colors = ['#92cad1', '#e9724d', '#d6d727', '#79ccb3', '#868686']
 
 fig = px.scatter(
     df,
@@ -31,19 +29,30 @@ fig = px.scatter(
     color="count",
     text="count",
     facet_col="site_name",
-    title="Pre-25th Dynasty royal object types",
-    labels={"count": "Total", "site_name": "site"},
+    title="25th Dynasty royal object types",
+    labels={"count": "Total"},
     color_continuous_scale='Sunset',
     template="plotly_white"
 )
 
 fig.update_layout( 
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=-0.70,
+        xanchor="center",
+        x=0.45,
+        traceorder='reversed'),
     font=dict(
         family="Verdana, sans-serif",
         color='black',
         size=8),
     legend_title_text='',
+    #yaxis=dict(
+        #tickmode='linear',
+        #dtick=1),
     margin=dict(l=0, r=10, t=40, b=0),
+    autosize=True,
     title_font=dict(size=8)
 )
 
@@ -51,4 +60,4 @@ fig.update_traces(textposition='middle right', textfont_size=6)
 fig.update_xaxes(title_text='', categoryorder='category ascending')
 fig.update_yaxes(title_text='', categoryorder='category descending')
 
-pio.write_image(fig, 'images/chapter4/pre_objs.png',scale=3, width=450, height=250)
+pio.write_image(fig, 'images/chapter4/25_objs.png',scale=3, width=550, height=450)
