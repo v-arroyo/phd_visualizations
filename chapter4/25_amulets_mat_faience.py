@@ -8,15 +8,19 @@ engine = create_engine('mysql+pymysql://victoria:amulets123@localhost:3306/phd_v
 query = """
 SELECT 
     s.site_name,
-    owner,
-    super,
-    sub,
-    COUNT(burial_id) as total_burials
+    b.owner,
+    CASE
+        WHEN a.material = 'lapis' THEN 'lapis lazuli'
+        ELSE a.material
+    END AS material,
+    COUNT(amulet_id) as count
 FROM burials b
 JOIN sites s
 ON s.site_id = b.site_id
-WHERE temp = '25th' AND b.site_id IN (1,2)
-GROUP BY 1,2,3,4
+JOIN amulets a
+ON a.burial_id = b.burial_id
+WHERE temp = '25th' AND b.site_id IN (1,2) AND a.material = 'faience'
+GROUP BY 1,2,3
 """
 
 df = pd.read_sql(query, engine)
@@ -25,14 +29,14 @@ custom_colors = ['#e9724d', '#92cad1', '#d6d727', '#79ccb3', '#868686']
 
 fig = px.bar(
     df,
-    x="super",
-    y="total_burials",
+    x="count",
+    y="material",
     color="owner",
     facet_col="site_name",
-    facet_row="sub",
-    text="total_burials",
-    title="25th Dynasty royal tomb structure",
-    labels={"super": "superstructure", "sub": "substructure", "site_name": "site"},
+    text='count',
+    barmode='stack',
+    title="25th Dynasty royal faience amulets",
+    labels={"owner": "owner", "artifact_type": "obj. type", "site_name": "site"},
     color_discrete_sequence=custom_colors,
     template="plotly_white"
 )
@@ -41,10 +45,10 @@ fig.update_layout(xaxis={'categoryorder': 'total descending'},
     legend=dict(
         #orientation="h",
         yanchor="bottom",
-        y=0.40,
+        y=0.30,
         xanchor="center",
-        x=1.10,
-        traceorder='reversed'),
+        x=1.10),
+        #traceorder='reversed'),
     font=dict(
         family="Verdana, sans-serif",
         color='black',
@@ -58,8 +62,8 @@ fig.update_layout(xaxis={'categoryorder': 'total descending'},
     title_font=dict(size=8)
 )
 
-fig.update_traces(textposition='auto', textfont_size=6)
+fig.update_traces(textposition='outside', textfont_size=6)
 fig.update_xaxes(title_text='')
 fig.update_yaxes(title_text='')
 
-pio.write_image(fig, 'images/chapter4/25_tomb.png',scale=3, width=550, height=320)
+pio.write_image(fig, 'images/chapter4/25_amulets_mat_faience.png',scale=3, width=500, height=250)

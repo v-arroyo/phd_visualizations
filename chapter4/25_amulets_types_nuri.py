@@ -40,11 +40,11 @@ fig = px.bar(
 
 fig.update_layout(yaxis={'categoryorder': 'total ascending'}, 
     legend=dict(
-        orientation="h",
+        #orientation="h",
         yanchor="bottom",
-        y=-0.20,
+        y=0.30,
         xanchor="center",
-        x=0.45),
+        x=1.30),
         #traceorder='reversed'),
     font=dict(
         family="Verdana, sans-serif",
@@ -63,4 +63,4 @@ fig.update_traces(textposition='outside', textfont_size=6)
 fig.update_xaxes(title_text='', matches=None)
 fig.update_yaxes(title_text='')
 
-pio.write_image(fig, 'images/chapter4/25_amulets_types_nuri.png',scale=3, width=300, height=300)
+pio.write_image(fig, 'images/chapter4/25_amulets_types_nuri.png',scale=3, width=300, height=200)
